@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask
-from flask_restful import Api
 from controllers import blueprints
 from configs import config
-from extensions import db
-from application.controllers.api import Todo, TodoList
-
+from extensions import db, api
+from application.controllers.api import api_v1
 
 def create_app(config_name=None):
     if config_name is None:
@@ -18,15 +16,13 @@ def create_app(config_name=None):
     # db
     db.init_app(app)
 
+    # flask rest-plus
+
+    api.init_app(app, version='1.0', title='Todo API',
+                 description='A simple TODO API')
+
     # blueprints
     for bp in blueprints:
         app.register_blueprint(bp)
-
-    # flask restful plugin
-
-    api = Api(app)
-
-    api.add_resource(TodoList, '/todos')
-    api.add_resource(Todo, '/todos/<string:todo_id>')
 
     return app
